@@ -27,7 +27,7 @@ module Spree
     mattr_reader *ATTRIBUTES
 
     @@address_attributes = [
-      :firstname, :lastname, :address1, :address2,
+      :firstname, :lastname, :address1, :address2, :fullname,:province_id, :barangay_id, :municity_id, :complete_address,
       :city, :country_id, :state_id, :zipcode, :phone,
       :state_name, :alternative_phone, :company,
       :country => [:iso, :name, :iso3, :iso_name],
