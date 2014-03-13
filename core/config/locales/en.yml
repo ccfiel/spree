@@ -966,7 +966,7 @@ en:
     server_error: The server returned an error
     settings: Settings
     ship: ship
-    ship_address: Ship Address
+    ship_address: Delivery Address
     ship_total: Ship Total
     shipment: Shipment
     shipment_inc_vat: Shipment including VAT
