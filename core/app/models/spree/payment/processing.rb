@@ -1,10 +1,8 @@
 module Spree
   class Payment < ActiveRecord::Base
     module Processing
-
       def process!
-        
-	if payment_method && payment_method.source_required?
+        if payment_method && payment_method.source_required?
           if source
             if !processing?
               if payment_method.supports?(source)
@@ -21,23 +19,20 @@ module Spree
           else
             raise Core::GatewayError.new(Spree.t(:payment_processing_failed))
           end
-	else if !payment_method.source_required? 
-	   if !processing?
-            if auto_capture?
-              purchase!
+        else
+          if !payment_method.source_required?
+            if !processing?
+              if auto_capture?
+                purchase!
+              else
+                authorize!
+              end
             else
-              authorize!
-             end
-           else
-            raise Core::GatewayError.new(I18n.t(:payment_processing_failed))
-           end
+              raise Core::GatewayError.new(I18n.t(:payment_processing_failed))
+            end
+          end
         end
-
-
       end
-
-
-
 
       def authorize!
         started_processing!
@@ -112,12 +107,12 @@ module Spree
 
           if response.success?
             self.class.create!(
-              :order => order,
-              :source => self,
-              :payment_method => payment_method,
-              :amount => credit_amount.abs * -1,
-              :response_code => response.authorization,
-              :state => 'completed'
+                :order => order,
+                :source => self,
+                :payment_method => payment_method,
+                :amount => credit_amount.abs * -1,
+                :response_code => response.authorization,
+                :state => 'completed'
             )
           else
             gateway_error(response)
@@ -132,24 +127,24 @@ module Spree
       end
 
       def gateway_options
-        options = { :email       => order.email,
-                    :customer    => order.email,
-                    :customer_id => order.user_id,
-                    :ip          => order.last_ip_address,
-                    # Need to pass in a unique identifier here to make some
-                    # payment gateways happy.
-                    #
-                    # For more information, please see Spree::Payment#set_unique_identifier
-                    :order_id    => gateway_order_id }
+        options = {:email => order.email,
+                   :customer => order.email,
+                   :customer_id => order.user_id,
+                   :ip => order.last_ip_address,
+                   # Need to pass in a unique identifier here to make some
+                   # payment gateways happy.
+                   #
+                   # For more information, please see Spree::Payment#set_unique_identifier
+                   :order_id => gateway_order_id}
 
-        options.merge!({ :shipping => order.ship_total * 100,
-                         :tax      => order.tax_total * 100,
-                         :subtotal => order.item_total * 100,
-                         :discount => order.discount_total * 100,
-                         :currency => currency })
+        options.merge!({:shipping => order.ship_total * 100,
+                        :tax => order.tax_total * 100,
+                        :subtotal => order.item_total * 100,
+                        :discount => order.discount_total * 100,
+                        :currency => currency})
 
-        options.merge!({ :billing_address  => order.bill_address.try(:active_merchant_hash),
-                        :shipping_address => order.ship_address.try(:active_merchant_hash) })
+        options.merge!({:billing_address => order.bill_address.try(:active_merchant_hash),
+                        :shipping_address => order.ship_address.try(:active_merchant_hash)})
 
         options
       end
