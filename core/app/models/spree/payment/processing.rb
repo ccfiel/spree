@@ -1,8 +1,10 @@
 module Spree
   class Payment < ActiveRecord::Base
     module Processing
+
       def process!
-        if payment_method && payment_method.source_required?
+        
+	if payment_method && payment_method.source_required?
           if source
             if !processing?
               if payment_method.supports?(source)
@@ -19,8 +21,23 @@ module Spree
           else
             raise Core::GatewayError.new(Spree.t(:payment_processing_failed))
           end
+	else if !payment_method.source_required? 
+	   if !processing?
+            if auto_capture?
+              purchase!
+            else
+              authorize!
+             end
+           else
+            raise Core::GatewayError.new(I18n.t(:payment_processing_failed))
+           end
         end
+
+
       end
+
+
+
 
       def authorize!
         started_processing!
