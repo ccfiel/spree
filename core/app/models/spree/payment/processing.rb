@@ -22,7 +22,7 @@ module Spree
         else
           if !payment_method.source_required?
             if !processing?
-              if auto_capture?
+              if payment_method.auto_capture?
                 purchase!
               else
                 authorize!
