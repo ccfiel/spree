@@ -9,10 +9,7 @@ $ ->
     show_country()
   else if ($ '#state_based').is(':checked')
     show_state()
-  else
-    show_state()
-    ($ '#state_based').click()
-
+ 
 
 show_country = ->
   ($ '#state_members :input').each ->
